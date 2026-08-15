@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -8,6 +8,15 @@ import { createClient } from "@/lib/supabase/client";
 export default function SignupPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    createClient()
+      .auth.getUser()
+      .then(({ data }) => {
+        if (data.user) router.push("/dashboard");
+      })
+      .catch(() => {});
+  }, [router]);
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -56,7 +65,7 @@ export default function SignupPage() {
       <header className="flex flex-col gap-2">
         <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">Crear cuenta</h1>
         <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          Registrate para empezar a entrenar.
+          Regístrate para empezar a entrenar.
         </p>
       </header>
 

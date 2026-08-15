@@ -1,20 +1,27 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export default function AppNav({ primerDiaSlug }: { primerDiaSlug: string | null }) {
   const router = useRouter();
   const pathname = usePathname();
+  const [signOutError, setSignOutError] = useState(false);
 
   const workoutHref = primerDiaSlug ? `/workout/${primerDiaSlug}` : "/rutinas";
 
   async function handleSignOut() {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push("/login");
-    router.refresh();
+    setSignOutError(false);
+    try {
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      router.push("/login");
+      router.refresh();
+    } catch {
+      setSignOutError(true);
+    }
   }
 
   const linkClass = (href: string) =>
@@ -42,6 +49,14 @@ export default function AppNav({ primerDiaSlug }: { primerDiaSlug: string | null
       >
         Salir
       </button>
+      {signOutError && (
+        <p
+          role="alert"
+          className="fixed inset-x-0 bottom-16 mx-auto w-fit rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300"
+        >
+          No se pudo cerrar sesión. Inténtalo de nuevo.
+        </p>
+      )}
     </nav>
   );
 }
