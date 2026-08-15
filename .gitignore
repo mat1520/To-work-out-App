@@ -1,0 +1,19 @@
+# Node modules
+node_modules/
+
+# Env
+.env*
+!.env.example
+
+# Next.js
+.next/
+out/
+public/exercises/
+
+# Medios pesados del dataset (se copian localmente a public/exercises)
+DATASET/exercises-dataset/videos/
+DATASET/exercises-dataset/images/
+
+# Supabase / misc
+*.tsbuildinfo
+.DS_Store
