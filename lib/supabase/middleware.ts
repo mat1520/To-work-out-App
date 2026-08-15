@@ -8,7 +8,10 @@ export async function updateSession(request: NextRequest) {
     {
       cookies: {
         getAll: () => request.cookies.getAll(),
-        setAll: (cs) => cs.forEach(({ name, value }) => request.cookies.set(name, value)),
+        setAll: (cs) => cs.forEach(({ name, value, options }) => {
+          request.cookies.set(name, value);
+          response.cookies.set(name, value, options);
+        }),
       },
     },
   );
