@@ -13,11 +13,11 @@ export async function completeOnboarding(input: ProfileInput) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login');
-  const { error: pErr } = await supabase.from('users_profile').insert({
+  const { error: pErr } = await supabase.from('users_profile').upsert({
     id: user.id, edad: input.edad, peso_actual: input.pesoActual, altura: input.altura,
     genero: input.genero, objetivo: input.objetivo, dias_por_semana: input.diasPorSemana,
     nivel_actividad: input.nivelActividad,
-  });
+  }, { onConflict: 'id' });
   if (pErr) throw pErr;
   const template = getTemplate(input.diasPorSemana, input.objetivo);
   const rows = template.flatMap((day) =>

@@ -70,7 +70,7 @@ export default async function WorkoutDayPage({ params }: { params: Promise<{ dia
 
   const { data: logRows } = await supabase
     .from("workout_logs")
-    .select("id_ejercicio,fecha,peso_levantado,reps_logradas")
+    .select("id,id_ejercicio,fecha,peso_levantado,reps_logradas")
     .eq("id_usuario", user.id)
     .in("id_ejercicio", ids)
     .order("fecha", { ascending: true });

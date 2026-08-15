@@ -15,7 +15,14 @@ export default async function OnboardingPage() {
     .eq("id", user.id)
     .maybeSingle();
 
-  if (perfil) redirect("/dashboard");
+  const { data: rutina } = await supabase
+    .from("user_routines")
+    .select("id")
+    .eq("id_usuario", user.id)
+    .limit(1)
+    .maybeSingle();
+
+  if (perfil && rutina) redirect("/dashboard");
 
   return (
     <main className="flex flex-1 flex-col items-center justify-center px-4 py-10">

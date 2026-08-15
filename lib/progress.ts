@@ -4,7 +4,7 @@ import type { LogRow } from '@/lib/types';
 export function getLastRecord(ejercicioId: string, logs: LogRow[]) {
   const mine = logs
     .filter((l) => l.id_ejercicio === ejercicioId)
-    .sort((a, b) => b.fecha.localeCompare(a.fecha));
+    .sort((a, b) => b.fecha.localeCompare(a.fecha) || (b.id ?? '').localeCompare(a.id ?? ''));
   if (mine.length === 0) return null;
   return { peso: mine[0].peso_levantado, reps: mine[0].reps_logradas, fecha: mine[0].fecha };
 }
