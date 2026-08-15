@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sobrecarga Progresiva — MVP Powerbuilding
 
-## Getting Started
+MVP de una app de powerbuilding para gestionar rutinas de entrenamiento con sobrecarga progresiva: seguimiento de entrenamientos, dashboard de progreso y un catálogo de 1,324 ejercicios con GIFs de demostración.
 
-First, run the development server:
+## Stack
+
+- **Next.js** (App Router, TypeScript)
+- **Supabase** (Postgres, Auth, REST API)
+- **Tailwind CSS**
+
+## Setup local
+
+1. **Variables de entorno** — crea `.env.local` copiando esta plantilla:
+
+   ```bash
+   NEXT_PUBLIC_SUPABASE_URL=https://<tu-proyecto>.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon-key>
+   SUPABASE_SERVICE_ROLE_KEY=<service-role-key>   # opcional, solo para re-seed
+   ```
+
+2. **Instalar dependencias:**
+
+   ```bash
+   npm install
+   ```
+
+3. **Arrancar el dev server:**
+
+   ```bash
+   npm run dev
+   ```
+
+   Abre [http://localhost:3000](http://localhost:3000).
+
+## Datos del catálogo
+
+El catálogo de ejercicios ya está sembrado en la base de datos remota (1,324 ejercicios con `gif_url` que apunta a `videos/<nombre>.gif`).
+
+Los GIFs se mantienen **locales** en `public/exercises/` (gitignored, ~126MB). Si acabas de clonar el repo, cópialos:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+mkdir -p public/exercises && cp DATASET/exercises-dataset/videos/*.gif public/exercises/
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Re-seed (solo si hace falta)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Obtén la service role key desde el dashboard de Supabase (Settings → API) y haz un POST del JSON del dataset a la API REST con `Prefer: resolution=merge-duplicates`:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+curl -X POST "{SUPABASE_URL}/rest/v1/exercises_catalog" \
+  -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
+  -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Prefer: resolution=merge-duplicates" \
+  --data-binary @DATASET/exercises-dataset/data/exercises.json
+```
 
-## Learn More
+Alternativamente, pide el procedimiento de seed basado en políticas al mantenedor del proyecto (documentado en el ledger del SDD).
 
-To learn more about Next.js, take a look at the following resources:
+## Despliegue
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npx vercel --prod
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Se usa la **CLI de Vercel** (y no el git import) porque `public/exercises/` está gitignored: la CLI sube los archivos locales, mientras que el import desde Git no los incluiría.
