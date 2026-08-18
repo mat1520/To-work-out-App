@@ -17,3 +17,4 @@ Notas de avance del proyecto.
 - 2026-08-18: Banner con acento naranja y objetivo del dia.
 - 2026-08-18: Encabezados con Barlow Condensed en toda la app.
 - 2026-08-18: Focus rings naranja en inputs y botones.
+- 2026-08-18: Conteo de sesiones de los ultimos 7 dias.
