@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import Link from "next/link";
 import StrengthChart, { type StrengthPoint } from "@/components/strength-chart";
 import { detectPRs, getLogros, getStreak } from "@/lib/progress";
@@ -27,22 +28,115 @@ const diasEntre = (desde: string, hasta: string) =>
       86_400_000,
   );
 
+const ICON_CLASS = "h-4 w-4";
+
+const DumbbellIcon = (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    aria-hidden="true"
+    className={ICON_CLASS}
+  >
+    <path d="M6.5 6.5v11M17.5 6.5v11M3 9.5v5M21 9.5v5M6.5 12h11" />
+  </svg>
+);
+
+const CalendarIcon = (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+    className={ICON_CLASS}
+  >
+    <rect x="3" y="4.5" width="18" height="16" rx="2" />
+    <path d="M16 2.5v4M8 2.5v4M3 10h18" />
+  </svg>
+);
+
+const SigmaIcon = (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+    className={ICON_CLASS}
+  >
+    <path d="M18 7V5H6l7 7-7 7h12v-2" />
+  </svg>
+);
+
+const GaugeIcon = (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+    className={ICON_CLASS}
+  >
+    <path d="m12 14 4-4" />
+    <path d="M3.34 19a10 10 0 1 1 17.32 0" />
+  </svg>
+);
+
+const TrophyIcon = (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+    className="h-5 w-5"
+  >
+    <path d="M8 21h8M12 17v4M7 4h10v6a5 5 0 0 1-10 0V4ZM7 6H4a2 2 0 0 0 2 5M17 6h3a2 2 0 0 1-2 5" />
+  </svg>
+);
+
+const FlameIcon = (
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="h-5 w-5">
+    <path d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z" />
+  </svg>
+);
+
 function StatCard({
   label,
   value,
   hint,
   accent = false,
+  icon,
 }: {
   label: string;
   value: string;
   hint?: string;
   accent?: boolean;
+  icon?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-1 rounded-2xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-      <p className="text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-        {label}
-      </p>
+    <div className="flex flex-col gap-2.5 rounded-2xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+          {label}
+        </p>
+        {icon ? (
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-orange-500/10 text-orange-500 dark:text-orange-400">
+            {icon}
+          </span>
+        ) : null}
+      </div>
       <p
         className={`font-display text-3xl font-bold tracking-tight ${
           accent ? "text-orange-500 dark:text-orange-400" : "text-zinc-900 dark:text-zinc-50"
@@ -79,7 +173,7 @@ export default async function DashboardPage() {
         </p>
         <Link
           href={slug ? `/workout/${slug}` : "/rutinas"}
-          className="rounded-full bg-orange-500 px-6 py-3 text-sm font-bold text-zinc-950 shadow-lg shadow-orange-500/25 transition-colors hover:bg-orange-400"
+          className="inline-flex h-11 items-center rounded-lg bg-orange-500 px-6 text-sm font-bold text-zinc-950 shadow-lg shadow-orange-500/25 transition-colors hover:bg-orange-400"
         >
           {slug ? "Ir a mi entrenamiento" : "Armar mi rutina"}
         </Link>
@@ -173,41 +267,57 @@ export default async function DashboardPage() {
 
       {diaHoy ? (
         <section
-          className="mt-6 rounded-2xl border border-orange-500/25 bg-gradient-to-br from-orange-500/15 to-orange-500/5 p-6"
+          className="relative mt-6 overflow-hidden rounded-2xl border border-orange-500/25 bg-gradient-to-br from-orange-500/15 via-orange-500/10 to-orange-500/5 p-6"
           aria-labelledby="hoy-title"
         >
-          <p
-            id="hoy-title"
-            className="text-xs font-bold uppercase tracking-widest text-orange-600 dark:text-orange-400"
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(ellipse 70% 60% at 100% 0%, rgba(249,115,22,0.18), transparent)",
+            }}
+          />
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            aria-hidden="true"
+            className="pointer-events-none absolute -right-7 -top-7 h-36 w-36 text-orange-500/15"
           >
-            Hoy toca
-          </p>
-          <h2 className="mt-1 font-display text-4xl font-bold uppercase tracking-tight text-zinc-900 dark:text-zinc-50">
-            {diaHoy}
-          </h2>
-          {subtitulo ? (
-            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{subtitulo}</p>
-          ) : null}
-          <Link
-            href={`/workout/${slugify(diaHoy)}`}
-            className="mt-4 inline-flex h-11 items-center rounded-full bg-orange-500 px-6 text-sm font-bold text-zinc-950 shadow-lg shadow-orange-500/25 transition hover:bg-orange-400"
-          >
-            Empezar entrenamiento
-          </Link>
+            <path d="M6.5 6.5v11M17.5 6.5v11M3 9.5v5M21 9.5v5M6.5 12h11" />
+          </svg>
+          <div className="relative">
+            <p
+              id="hoy-title"
+              className="text-xs font-bold uppercase tracking-widest text-orange-600 dark:text-orange-400"
+            >
+              Hoy toca
+            </p>
+            <h2 className="mt-1 font-display text-4xl font-bold uppercase tracking-tight text-zinc-900 dark:text-zinc-50">
+              {diaHoy}
+            </h2>
+            {subtitulo ? (
+              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{subtitulo}</p>
+            ) : null}
+            <Link
+              href={`/workout/${slugify(diaHoy)}`}
+              className="mt-4 inline-flex h-11 items-center rounded-lg bg-orange-500 px-6 text-sm font-bold text-zinc-950 shadow-lg shadow-orange-500/25 transition hover:bg-orange-400"
+            >
+              Empezar entrenamiento
+            </Link>
+          </div>
         </section>
       ) : null}
 
       <div className="mt-6 grid gap-3 sm:grid-cols-2">
-        <div className="flex flex-col justify-between gap-3 rounded-2xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-          <svg
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            aria-hidden="true"
-            className="h-8 w-8 text-orange-500 dark:text-orange-400"
-          >
-            <path d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z" />
-          </svg>
-          <div>
+        <div className="flex items-center gap-4 rounded-2xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-orange-500 text-zinc-950">
+            {FlameIcon}
+          </span>
+          <div className="min-w-0">
             <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
               {streak} {streak === 1 ? "día" : "días"} seguido{streak === 1 ? "" : "s"} entrenando
             </p>
@@ -218,12 +328,15 @@ export default async function DashboardPage() {
         </div>
 
         {ultimoPr ? (
-          <div className="flex flex-col justify-between gap-3 rounded-2xl border border-orange-500/25 bg-orange-500/5 p-4">
-            <p className="text-xs font-medium uppercase tracking-wider text-orange-600 dark:text-orange-400">
-              PR destacado
-            </p>
-            <div>
-              <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+          <div className="flex items-center gap-4 rounded-2xl border border-orange-500/25 bg-orange-500/5 p-4">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-orange-500/15 text-orange-500 dark:text-orange-400">
+              {TrophyIcon}
+            </span>
+            <div className="min-w-0">
+              <p className="text-xs font-medium uppercase tracking-wider text-orange-600 dark:text-orange-400">
+                PR destacado
+              </p>
+              <p className="mt-0.5 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
                 Nuevo PR en {names[ultimoPr.id_ejercicio] ?? ultimoPr.id_ejercicio} ·{" "}
                 {ultimoPr.peso} kg ·{" "}
                 {diasDesdePr === 0
@@ -240,26 +353,33 @@ export default async function DashboardPage() {
           label="Entrenamientos"
           value={String(diasEntrenados.size)}
           hint={diasEntrenados.size === 1 ? "sesión registrada" : "sesiones registradas"}
+          icon={DumbbellIcon}
         />
         <StatCard
           label="Esta semana"
           value={String(entradasSemana)}
           hint={`de los últimos 7 días · última: ${formatFecha(ultimaSesion)}`}
+          icon={CalendarIcon}
         />
         <StatCard
           label="Volumen total"
           value={volumen.toLocaleString("es-MX")}
           hint="kg levantados en total"
+          icon={SigmaIcon}
         />
         <StatCard
           label="Volumen promedio"
           value={volumenPromedio.toLocaleString("es-MX")}
           hint="kg por sesión"
+          icon={GaugeIcon}
         />
       </div>
 
       <section className="mt-6" aria-labelledby="maximos-title">
-        <h2 id="maximos-title" className="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+        <h2
+          id="maximos-title"
+          className="font-display text-sm font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400"
+        >
           Récords actuales
         </h2>
         <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -285,14 +405,20 @@ export default async function DashboardPage() {
       </section>
 
       <section className="mt-6" aria-labelledby="curva-title">
-        <h2 id="curva-title" className="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+        <h2
+          id="curva-title"
+          className="font-display text-sm font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400"
+        >
           Curva de fuerza
         </h2>
         <StrengthChart data={puntos} names={names} />
       </section>
 
       <section className="mt-6" aria-labelledby="logros-title">
-        <h2 id="logros-title" className="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+        <h2
+          id="logros-title"
+          className="font-display text-sm font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400"
+        >
           Logros
         </h2>
         <div className="mt-3 grid grid-cols-2 gap-3">
@@ -306,7 +432,7 @@ export default async function DashboardPage() {
               }`}
             >
               <span
-                className={`flex h-9 w-9 items-center justify-center rounded-full ${
+                className={`flex h-10 w-10 items-center justify-center rounded-full ${
                   logro.desbloqueado
                     ? "bg-orange-500 text-zinc-950"
                     : "bg-zinc-200 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-500"
@@ -321,7 +447,7 @@ export default async function DashboardPage() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     aria-hidden="true"
-                    className="h-4 w-4"
+                    className="h-5 w-5"
                   >
                     <path d="M5 13l4 4L19 7" />
                   </svg>
@@ -334,7 +460,7 @@ export default async function DashboardPage() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     aria-hidden="true"
-                    className="h-4 w-4"
+                    className="h-5 w-5"
                   >
                     <rect x="4" y="11" width="16" height="10" rx="2" />
                     <path d="M8 11V7a4 4 0 0 1 8 0v4" />

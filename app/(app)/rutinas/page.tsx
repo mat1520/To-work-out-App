@@ -34,6 +34,19 @@ export default async function RutinasPage() {
           <h1 className="font-display text-3xl font-bold uppercase tracking-tight text-zinc-900 dark:text-zinc-50">Mis rutinas</h1>
         </header>
         <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-zinc-300 px-6 py-10 text-center dark:border-zinc-700">
+          <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-500/10 text-orange-500 dark:text-orange-400">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              aria-hidden="true"
+              className="h-6 w-6"
+            >
+              <path d="M6.5 6.5v11M17.5 6.5v11M3 9.5v5M21 9.5v5M6.5 12h11" />
+            </svg>
+          </span>
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
             Aún no tienes rutinas. Completa el onboarding para generar tu plan de entrenamiento.
           </p>
@@ -77,7 +90,12 @@ export default async function RutinasPage() {
   return (
     <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-6">
       <header className="flex flex-col gap-1">
-        <h1 className="font-display text-3xl font-bold uppercase tracking-tight text-zinc-900 dark:text-zinc-50">Mis rutinas</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="font-display text-3xl font-bold uppercase tracking-tight text-zinc-900 dark:text-zinc-50">Mis rutinas</h1>
+          <span className="mt-0.5 inline-flex shrink-0 items-center rounded-full bg-orange-500/10 px-2.5 py-0.5 text-xs font-semibold text-orange-600 dark:text-orange-400">
+            {days.length} {days.length === 1 ? "día" : "días"}
+          </span>
+        </div>
         <p className="text-sm text-zinc-600 dark:text-zinc-400">
           Agrega o quita ejercicios y ajusta series y repeticiones por día.
         </p>

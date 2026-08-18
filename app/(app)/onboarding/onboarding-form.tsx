@@ -4,8 +4,39 @@ import { useState, useTransition, type FormEvent } from "react";
 import { completeOnboarding } from "@/actions/profile";
 import type { Objetivo } from "@/lib/types";
 
+const inputContainerClass =
+  "flex h-11 items-center rounded-lg border border-zinc-300 bg-white px-3 transition focus-within:border-orange-500 focus-within:ring-2 focus-within:ring-orange-500/30 dark:border-zinc-700 dark:bg-zinc-950 dark:focus-within:border-orange-400";
+
 const inputClass =
-  "h-11 rounded-lg border border-zinc-300 bg-white px-3 text-base text-zinc-900 outline-none transition focus:border-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50 dark:focus:border-zinc-100";
+  "w-full bg-transparent text-base text-zinc-900 outline-none placeholder:text-zinc-400 dark:text-zinc-50";
+
+const GENEROS = [
+  { value: "masculino", label: "Masculino" },
+  { value: "femenino", label: "Femenino" },
+  { value: "otro", label: "Otro" },
+];
+
+const OBJETIVOS = [
+  { value: "hipertrofia", label: "Hipertrofia" },
+  { value: "potencia", label: "Potencia" },
+  { value: "ambos", label: "Ambos" },
+];
+
+const NIVELES = [
+  { value: "sedentario", label: "Sedentario" },
+  { value: "ligero", label: "Ligero" },
+  { value: "moderado", label: "Moderado" },
+  { value: "activo", label: "Activo" },
+  { value: "muy_activo", label: "Muy activo" },
+];
+
+function chipClass(active: boolean): string {
+  return `flex h-11 cursor-pointer items-center justify-center rounded-xl border text-sm font-semibold transition-colors ${
+    active
+      ? "border-orange-500 bg-orange-500 text-zinc-950 shadow-md shadow-orange-500/25"
+      : "border-zinc-300 bg-white text-zinc-600 hover:border-orange-500/60 hover:text-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:border-orange-400/60 dark:hover:text-zinc-50"
+  }`;
+}
 
 function mensajeError(err: unknown): string {
   const msg = err instanceof Error ? err.message : "";
@@ -32,6 +63,10 @@ export default function OnboardingForm() {
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+    if (!genero || !objetivo || !diasPorSemana || !nivelActividad) {
+      setError("Completa todas las opciones antes de continuar.");
+      return;
+    }
     startTransition(async () => {
       try {
         await completeOnboarding({
@@ -53,91 +88,101 @@ export default function OnboardingForm() {
     <div className="flex flex-col gap-8">
       <header className="flex flex-col gap-2">
         <h1 className="font-display text-3xl font-bold uppercase tracking-tight text-zinc-900 dark:text-zinc-50">
-          Cuéntanos de ti
+          Tu perfil
         </h1>
         <p className="text-sm text-zinc-600 dark:text-zinc-400">
           Con estos datos crearemos tu rutina personalizada.
         </p>
       </header>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
         <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-900 dark:text-zinc-100">
           Edad (años)
-          <input
-            type="number"
-            required
-            min={13}
-            max={100}
-            inputMode="numeric"
-            value={edad}
-            onChange={(e) => setEdad(e.target.value)}
-            className={inputClass}
-          />
+          <span className={inputContainerClass}>
+            <input
+              type="number"
+              required
+              min={13}
+              max={100}
+              inputMode="numeric"
+              value={edad}
+              onChange={(e) => setEdad(e.target.value)}
+              className={inputClass}
+            />
+          </span>
         </label>
 
         <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-900 dark:text-zinc-100">
           Peso actual (kg)
-          <input
-            type="number"
-            required
-            min={1}
-            step="0.1"
-            inputMode="decimal"
-            value={pesoActual}
-            onChange={(e) => setPesoActual(e.target.value)}
-            className={inputClass}
-          />
+          <span className={inputContainerClass}>
+            <input
+              type="number"
+              required
+              min={1}
+              step="0.1"
+              inputMode="decimal"
+              value={pesoActual}
+              onChange={(e) => setPesoActual(e.target.value)}
+              className={inputClass}
+            />
+          </span>
         </label>
 
         <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-900 dark:text-zinc-100">
           Altura (m)
-          <input
-            type="number"
-            required
-            min={0.5}
-            max={2.5}
-            step="0.01"
-            inputMode="decimal"
-            placeholder="Ej. 1.67"
-            value={altura}
-            onChange={(e) => setAltura(e.target.value)}
-            className={inputClass}
-          />
+          <span className={inputContainerClass}>
+            <input
+              type="number"
+              required
+              min={0.5}
+              max={2.5}
+              step="0.01"
+              inputMode="decimal"
+              placeholder="Ej. 1.67"
+              value={altura}
+              onChange={(e) => setAltura(e.target.value)}
+              className={inputClass}
+            />
+          </span>
         </label>
 
-        <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-900 dark:text-zinc-100">
-          Género
-          <select
-            required
-            value={genero}
-            onChange={(e) => setGenero(e.target.value)}
-            className={inputClass}
-          >
-            <option value="" disabled>
-              Selecciona una opción
-            </option>
-            <option value="masculino">Masculino</option>
-            <option value="femenino">Femenino</option>
-            <option value="otro">Otro</option>
-          </select>
-        </label>
+        <fieldset className="flex flex-col gap-2">
+          <legend className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+            Género
+          </legend>
+          <div className="grid grid-cols-3 gap-2">
+            {GENEROS.map((op) => (
+              <button
+                key={op.value}
+                type="button"
+                aria-pressed={genero === op.value}
+                onClick={() => setGenero(op.value)}
+                className={chipClass(genero === op.value)}
+              >
+                {op.label}
+              </button>
+            ))}
+          </div>
+        </fieldset>
 
-        <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-900 dark:text-zinc-100">
-          Objetivo
-          <select
-            required
-            value={objetivo}
-            onChange={(e) => setObjetivo(e.target.value)}
-            className={inputClass}
-          >
-            <option value="" disabled>
-              Selecciona una opción
-            </option>
-            <option value="hipertrofia">Hipertrofia</option>
-            <option value="potencia">Potencia</option>
-            <option value="ambos">Ambos</option>
-          </select>
-        </label>
+        <fieldset className="flex flex-col gap-2">
+          <legend className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+            Objetivo
+          </legend>
+          <div className="grid grid-cols-3 gap-2">
+            {OBJETIVOS.map((op) => (
+              <button
+                key={op.value}
+                type="button"
+                aria-pressed={objetivo === op.value}
+                onClick={() => setObjetivo(op.value)}
+                className={chipClass(objetivo === op.value)}
+              >
+                {op.label}
+              </button>
+            ))}
+          </div>
+        </fieldset>
 
         <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-900 dark:text-zinc-100">
           Días de entrenamiento por semana
@@ -145,7 +190,7 @@ export default function OnboardingForm() {
             required
             value={diasPorSemana}
             onChange={(e) => setDiasPorSemana(e.target.value)}
-            className={inputClass}
+            className="h-11 cursor-pointer rounded-lg border border-zinc-300 bg-white px-3 text-base text-zinc-900 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/30 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50 dark:focus:border-orange-400"
           >
             <option value="" disabled>
               Selecciona una opción
@@ -158,24 +203,24 @@ export default function OnboardingForm() {
           </select>
         </label>
 
-        <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-900 dark:text-zinc-100">
-          Nivel de actividad
-          <select
-            required
-            value={nivelActividad}
-            onChange={(e) => setNivelActividad(e.target.value)}
-            className={inputClass}
-          >
-            <option value="" disabled>
-              Selecciona una opción
-            </option>
-            <option value="sedentario">Sedentario</option>
-            <option value="ligero">Ligero</option>
-            <option value="moderado">Moderado</option>
-            <option value="activo">Activo</option>
-            <option value="muy_activo">Muy activo</option>
-          </select>
-        </label>
+        <fieldset className="flex flex-col gap-2">
+          <legend className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+            Nivel de actividad
+          </legend>
+          <div className="grid grid-cols-3 gap-2">
+            {NIVELES.map((op) => (
+              <button
+                key={op.value}
+                type="button"
+                aria-pressed={nivelActividad === op.value}
+                onClick={() => setNivelActividad(op.value)}
+                className={chipClass(nivelActividad === op.value)}
+              >
+                {op.label}
+              </button>
+            ))}
+          </div>
+        </fieldset>
 
         {error && (
           <p
@@ -189,9 +234,9 @@ export default function OnboardingForm() {
         <button
           type="submit"
           disabled={isPending}
-          className="h-11 rounded-lg bg-zinc-900 text-sm font-semibold text-white transition enabled:hover:bg-zinc-700 disabled:opacity-60 dark:bg-zinc-100 dark:text-zinc-900 dark:enabled:hover:bg-zinc-300"
+          className="h-12 w-full cursor-pointer rounded-xl bg-orange-500 text-sm font-bold uppercase tracking-wide text-zinc-950 shadow-lg shadow-orange-500/25 transition enabled:hover:bg-orange-400 disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500"
         >
-          {isPending ? "Creando tu rutina..." : "Crear mi rutina"}
+          {isPending ? "Guardando..." : "Guardar y empezar"}
         </button>
       </form>
     </div>
