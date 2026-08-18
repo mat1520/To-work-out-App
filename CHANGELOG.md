@@ -13,3 +13,4 @@ Notas de avance del proyecto.
 - 2026-08-18: Barlow y Barlow Condensed como tipografia global.
 - 2026-08-18: CTAs de login y signup en color primario.
 - 2026-08-18: Botones de estado vacio en naranja.
+- 2026-08-18: Tooltip y eje X con formato de fecha.
