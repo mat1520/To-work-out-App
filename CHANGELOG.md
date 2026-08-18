@@ -24,3 +24,4 @@ Notas de avance del proyecto.
 - 2026-08-18: Registro de cambios del proyecto.
 - 2026-08-18: Resaltado naranja al pasar el cursor.
 - 2026-08-18: Mensajes y CTAs alineados en toda la app.
+- 2026-08-18: Edad, altura y peso corporal visibles.
