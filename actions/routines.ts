@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { vInt, vTextoNoVacio } from "@/lib/validate";
 
 export interface RoutineItemInput {
   ejercicioId: string;
@@ -39,22 +40,30 @@ export async function saveRoutineDay(dia: string, items: RoutineItemInput[]): Pr
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
+  const diaValido = vTextoNoVacio(dia, "Día");
+  if (!Array.isArray(items) || items.length === 0) {
+    throw new Error("Debes agregar al menos un ejercicio.");
+  }
+  const itemsValidos = items.map((item, i) => ({
+    id_ejercicio: vTextoNoVacio(item?.ejercicioId, `Ejercicio ${i + 1}`),
+    series_objetivo: vInt(item?.series, 1, 20, `Series del ejercicio ${i + 1}`),
+    reps_objetivo: vInt(item?.reps, 1, 100, `Reps del ejercicio ${i + 1}`),
+  }));
+
   const { error: deleteError } = await supabase
     .from("user_routines")
     .delete()
     .eq("id_usuario", user.id)
-    .eq("dia", dia);
+    .eq("dia", diaValido);
   if (deleteError) throw new Error(deleteError.message);
 
-  if (items.length === 0) return;
-
   const { error } = await supabase.from("user_routines").insert(
-    items.map((item) => ({
+    itemsValidos.map((item) => ({
       id_usuario: user.id,
-      dia,
-      id_ejercicio: item.ejercicioId,
-      series_objetivo: item.series,
-      reps_objetivo: item.reps,
+      dia: diaValido,
+      id_ejercicio: item.id_ejercicio,
+      series_objetivo: item.series_objetivo,
+      reps_objetivo: item.reps_objetivo,
     })),
   );
   if (error) throw new Error(error.message);

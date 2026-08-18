@@ -90,13 +90,15 @@ export default function OnboardingForm() {
         </label>
 
         <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-900 dark:text-zinc-100">
-          Altura (cm)
+          Altura (m)
           <input
             type="number"
             required
-            min={1}
-            step="0.1"
+            min={0.5}
+            max={2.5}
+            step="0.01"
             inputMode="decimal"
+            placeholder="Ej. 1.67"
             value={altura}
             onChange={(e) => setAltura(e.target.value)}
             className={inputClass}

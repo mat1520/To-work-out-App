@@ -10,12 +10,24 @@ export const metadata: Metadata = { title: "Entrenamiento" };
 
 const slugify = (dia: string) => dia.toLowerCase().replace(/\s+/g, "-");
 
-function LastRecordBanner({ text, objetivo }: { text: string; objetivo: string }) {
+function LastRecordBanner({
+  text,
+  objetivo,
+  cumplido,
+}: {
+  text: string;
+  objetivo: string;
+  cumplido?: boolean;
+}) {
   return (
     <div className="flex flex-col gap-0.5 rounded-xl border border-orange-500/30 bg-orange-500/5 px-3 py-2">
       <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">{text}</p>
-      <p className="text-xs font-medium text-orange-600 dark:text-orange-400">
-        Objetivo del día: {objetivo}
+      <p
+        className={`text-xs font-medium ${
+          cumplido ? "text-green-600 dark:text-green-400" : "text-orange-600 dark:text-orange-400"
+        }`}
+      >
+        {cumplido ? "Objetivo del día cumplido" : `Objetivo del día: ${objetivo}`}
       </p>
     </div>
   );
@@ -79,9 +91,24 @@ export default async function WorkoutDayPage({ params }: { params: Promise<{ dia
     .order("fecha", { ascending: true });
   const logs: LogRow[] = logRows ?? [];
 
+  const hoy = new Date();
+  const hoyKey = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, "0")}-${String(
+    hoy.getDate()
+  ).padStart(2, "0")}`;
+  const seriesHoyPorEjercicio = new Map<string, number>();
+  for (const log of logs) {
+    if (log.fecha === hoyKey) {
+      seriesHoyPorEjercicio.set(
+        log.id_ejercicio,
+        (seriesHoyPorEjercicio.get(log.id_ejercicio) ?? 0) + 1
+      );
+    }
+  }
+
   const cards = dayRows.map((row) => {
     const entry = byId.get(row.id_ejercicio);
     const last = getLastRecord(row.id_ejercicio, logs);
+    const seriesHoy = seriesHoyPorEjercicio.get(row.id_ejercicio) ?? 0;
     return {
       id: row.id_ejercicio,
       nombre: entry?.name ?? row.id_ejercicio,
@@ -90,6 +117,9 @@ export default async function WorkoutDayPage({ params }: { params: Promise<{ dia
       banner: buildBanner(last),
       prevPeso: last?.peso ?? null,
       prevReps: last?.reps ?? null,
+      seriesHoy,
+      seriesObjetivo: row.series_objetivo,
+      objetivoCumplido: seriesHoy >= row.series_objetivo,
     };
   });
 
@@ -127,13 +157,19 @@ export default async function WorkoutDayPage({ params }: { params: Promise<{ dia
       </header>
       {cards.map((card) => (
         <div key={card.id} className="flex flex-col gap-2">
-          <LastRecordBanner text={card.banner} objetivo={card.objetivo} />
+          <LastRecordBanner
+            text={card.banner}
+            objetivo={card.objetivo}
+            cumplido={card.objetivoCumplido}
+          />
           <RecordInput
             ejercicioId={card.id}
             nombre={card.nombre}
             gifUrl={card.gifUrl ?? undefined}
             prevPeso={card.prevPeso}
             prevReps={card.prevReps}
+            seriesHoy={card.seriesHoy}
+            seriesObjetivo={card.seriesObjetivo}
           />
         </div>
       ))}

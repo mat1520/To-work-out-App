@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import LogoutButton from "./logout-button";
+import MfaSection from "./mfa-section";
 import PesoForm from "./peso-form";
 
 export const metadata: Metadata = { title: "Perfil" };
@@ -71,7 +72,14 @@ export default async function PerfilPage() {
         <h2 id="datos-title" className="sr-only">Datos personales</h2>
         <dl className="divide-y divide-zinc-100 px-5 dark:divide-zinc-800">
           <Row label="Edad" value={perfil?.edad ? `${perfil.edad} años` : "—"} />
-          <Row label="Altura" value={perfil?.altura ? `${perfil.altura} cm` : "—"} />
+          <Row
+            label="Altura"
+            value={
+              perfil?.altura != null
+                ? `${Number(perfil.altura).toLocaleString("es-MX", { minimumFractionDigits: 2 })} m (${Math.round(Number(perfil.altura) * 100)} cm)`
+                : "—"
+            }
+          />
           <Row label="Género" value={perfil ? (GENEROS[perfil.genero] ?? perfil.genero) : "—"} />
           <Row label="Objetivo" value={perfil ? (OBJETIVOS[perfil.objetivo] ?? perfil.objetivo) : "—"} />
           <Row
@@ -91,6 +99,8 @@ export default async function PerfilPage() {
         </h2>
         <PesoForm pesoActual={perfil?.peso_actual ?? null} />
       </section>
+
+      <MfaSection />
 
       <section aria-labelledby="resumen-title" className="grid grid-cols-2 gap-3">
         <h2 id="resumen-title" className="sr-only">Resumen de actividad</h2>

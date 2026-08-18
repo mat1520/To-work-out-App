@@ -1,32 +1,50 @@
 # Sobrecarga Progresiva
 
-App de powerbuilding para gestionar rutinas de entrenamiento con sobrecarga progresiva: rutinas automáticas, seguimiento de entrenamientos con detección de récords, dashboard de progreso y un catálogo de 1,324 ejercicios con GIFs de demostración.
+Entrena con sobrecarga progresiva: rutinas automáticas, registro de series en segundos y detección de récords personales. Tu fuerza, medida.
 
-Hecho por [mat1520](https://github.com/mat1520).
+[![Next.js](https://img.shields.io/badge/Next.js%2016-000000?style=flat-square&logo=next.js&logoColor=white)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=flat-square&logo=supabase&logoColor=white)](https://supabase.com)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-38BDF8?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white)](https://vercel.com)
+[![Estado](https://img.shields.io/badge/Estado-activo-22c55e?style=flat-square)]()
+
+## Características
+
+- **Rutinas automáticas** — Plan Push · Pull · Legs o Full Body generado según tu objetivo, días por semana y nivel. Sin decidir nada.
+- **Registro en segundos** — Peso y repeticiones por serie durante el entrenamiento, con el récord anterior siempre a la vista.
+- **Detector de PR** — Al batir tu récord suena el aviso: nuevo mejor peso o nuevas repeticiones. Progreso garantizado.
+- **Dashboard de progreso** — Racha, logros y curvas de fuerza de tus levantamientos principales en el tiempo.
+- **Perfil** — Peso corporal editable y verificación en dos pasos (2FA) opcional.
+- **Catálogo de 1,324 ejercicios** — Con GIF de demostración para cada movimiento.
 
 ## Stack
 
-- **Next.js** (App Router, TypeScript)
-- **Supabase** (Postgres, Auth, REST API)
+- **Next.js** — App Router, Server Components y Server Actions
+- **Supabase** — Postgres, Auth y Row Level Security
 - **Tailwind CSS**
+- **Recharts** — Gráficas de curva de fuerza
+- **Vitest** — Tests unitarios
 
-## Setup local
+## Empezar
 
-1. **Variables de entorno** — crea `.env.local` copiando esta plantilla:
+**Requisitos:** Node.js 20+ y npm.
+
+1. **Variables de entorno** — crea `.env.local` en la raíz del proyecto:
 
    ```bash
    NEXT_PUBLIC_SUPABASE_URL=https://<tu-proyecto>.supabase.co
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon-key>
-   SUPABASE_SERVICE_ROLE_KEY=<service-role-key>   # opcional, solo para re-seed
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=<tu-anon-key>
+   SUPABASE_SERVICE_ROLE_KEY=<tu-service-role-key>   # opcional, solo para re-seed
    ```
 
-2. **Instalar dependencias:**
+2. **Instala las dependencias:**
 
    ```bash
    npm install
    ```
 
-3. **Arrancar el dev server:**
+3. **Arranca el servidor de desarrollo:**
 
    ```bash
    npm run dev
@@ -34,30 +52,17 @@ Hecho por [mat1520](https://github.com/mat1520).
 
    Abre [http://localhost:3000](http://localhost:3000).
 
-## Datos del catálogo
+4. **Ejecuta los tests:**
 
-El catálogo de ejercicios ya está sembrado en la base de datos remota (1,324 ejercicios con `gif_url` que apunta a `videos/<nombre>.gif`).
+   ```bash
+   npm test
+   ```
 
-Los GIFs se mantienen **locales** en `public/exercises/` (gitignored, ~126MB). Si acabas de clonar el repo, cópialos:
+El catálogo de ejercicios ya está sembrado en la base de datos remota. Los GIFs viven en `public/exercises/` (gitignored, ~126 MB); si acabas de clonar el repo, cópialos con:
 
 ```bash
 mkdir -p public/exercises && cp DATASET/exercises-dataset/videos/*.gif public/exercises/
 ```
-
-### Re-seed (solo si hace falta)
-
-Obtén la service role key desde el dashboard de Supabase (Settings → API) y haz un POST del JSON del dataset a la API REST con `Prefer: resolution=merge-duplicates`:
-
-```bash
-curl -X POST "{SUPABASE_URL}/rest/v1/exercises_catalog" \
-  -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
-  -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
-  -H "Content-Type: application/json" \
-  -H "Prefer: resolution=merge-duplicates" \
-  --data-binary @DATASET/exercises-dataset/data/exercises.json
-```
-
-Alternativamente, pide el procedimiento de seed basado en políticas al mantenedor del proyecto (documentado en el ledger del SDD).
 
 ## Despliegue
 
@@ -65,4 +70,18 @@ Alternativamente, pide el procedimiento de seed basado en políticas al mantened
 npx vercel --prod
 ```
 
-Se usa la **CLI de Vercel** (y no el git import) porque `public/exercises/` está gitignored: la CLI sube los archivos locales, mientras que el import desde Git no los incluiría.
+Se usa la CLI de Vercel en lugar del import desde Git porque `public/exercises/` está gitignored: la CLI sube los archivos locales, mientras que el import desde Git no los incluiría.
+
+## Estructura del proyecto
+
+```
+app/          Páginas y layouts (landing, onboarding, rutinas, workout, dashboard, perfil)
+components/   Componentes reutilizables (gráficas, registro de series, buscador de ejercicios)
+lib/          Lógica de negocio, tipos y cliente de Supabase
+actions/      Server Actions (registros, perfil, rutinas)
+tests/        Tests unitarios (Vitest)
+```
+
+## Autor
+
+Hecho por [mat1520](https://github.com/mat1520).

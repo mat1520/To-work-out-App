@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Barlow, Barlow_Condensed } from "next/font/google";
+import { connection } from "next/server";
 import "./globals.css";
 
 const barlow = Barlow({
@@ -19,7 +20,9 @@ export const metadata: Metadata = {
   description: "Entrena con sobrecarga progresiva: registra tus series, supera tus récords y mira crecer tu fuerza.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  await connection();
+
   return (
     <html
       lang="es"

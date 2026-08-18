@@ -11,6 +11,8 @@ interface RecordInputProps {
   gifUrl?: string;
   prevPeso: number | null;
   prevReps: number | null;
+  seriesHoy: number;
+  seriesObjetivo: number;
 }
 
 export default function RecordInput({
@@ -19,6 +21,8 @@ export default function RecordInput({
   gifUrl,
   prevPeso,
   prevReps,
+  seriesHoy,
+  seriesObjetivo,
 }: RecordInputProps) {
   const router = useRouter();
   const [peso, setPeso] = useState("");
@@ -43,6 +47,9 @@ export default function RecordInput({
     repsNum > 0;
   const esPR =
     valid && prevPeso !== null && prevReps !== null && isNewPr(prevPeso, prevReps, pesoNum, repsNum);
+  const objetivoCumplido = seriesObjetivo > 0 && seriesHoy >= seriesObjetivo;
+  const progreso =
+    seriesObjetivo > 0 ? Math.min(100, (seriesHoy / seriesObjetivo) * 100) : 0;
 
   async function handleSave() {
     if (!valid) return;
@@ -128,6 +135,33 @@ export default function RecordInput({
         >
           {pending ? "Guardando..." : "Guardar Serie"}
         </button>
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <p
+          className={`text-xs font-semibold ${
+            objetivoCumplido
+              ? "text-green-600 dark:text-green-400"
+              : "text-zinc-600 dark:text-zinc-300"
+          }`}
+        >
+          {objetivoCumplido
+            ? "Objetivo de hoy cumplido"
+            : `Series de hoy: ${seriesHoy} / ${seriesObjetivo}`}
+        </p>
+        <div
+          role="progressbar"
+          aria-label={`Progreso de series de hoy en ${nombre}`}
+          aria-valuenow={seriesHoy}
+          aria-valuemin={0}
+          aria-valuemax={seriesObjetivo}
+          className="h-1.5 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800"
+        >
+          <div
+            className="h-full rounded-full bg-green-500 transition-all"
+            style={{ width: `${progreso}%` }}
+          />
+        </div>
       </div>
 
       {pr && (

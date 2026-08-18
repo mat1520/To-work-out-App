@@ -28,6 +28,12 @@ export default function SignupPage() {
     setMessage(null);
     setSubmitting(true);
 
+    if (password.length < 8) {
+      setError("La contraseña debe tener al menos 8 caracteres.");
+      setSubmitting(false);
+      return;
+    }
+
     const supabase = createClient();
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -87,7 +93,7 @@ export default function SignupPage() {
           <input
             type="password"
             required
-            minLength={6}
+            minLength={8}
             autoComplete="new-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}

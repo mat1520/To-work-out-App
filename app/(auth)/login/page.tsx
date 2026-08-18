@@ -8,6 +8,11 @@ import { createClient } from "@/lib/supabase/client";
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [factorId, setFactorId] = useState<string | null>(null);
+  const [code, setCode] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     createClient()
@@ -17,9 +22,6 @@ export default function LoginPage() {
       })
       .catch(() => {});
   }, [router]);
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -44,7 +46,59 @@ export default function LoginPage() {
       return;
     }
 
+    const { data: assurance } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    const { data: factorsData } = await supabase.auth.mfa.listFactors();
+    const factor = factorsData?.totp[0] ?? factorsData?.all[0];
+
+    if (
+      factor &&
+      (assurance?.nextLevel === "aal2" ||
+        (assurance?.currentLevel === "aal1" && (factorsData?.all.length ?? 0) > 0))
+    ) {
+      setFactorId(factor.id);
+      setCode("");
+      setSubmitting(false);
+      return;
+    }
+
     router.push("/dashboard");
+  }
+
+  async function handleVerify(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!factorId) return;
+    if (!/^\d{6}$/.test(code)) {
+      setError("Ingresa el código de 6 dígitos.");
+      return;
+    }
+    setError(null);
+    setSubmitting(true);
+
+    const supabase = createClient();
+    const { data: challenge, error: challengeError } = await supabase.auth.mfa.challenge({
+      factorId,
+    });
+    if (challengeError) {
+      setError("No se pudo verificar el código. Inténtalo de nuevo.");
+      setSubmitting(false);
+      return;
+    }
+
+    const { error } = await supabase.auth.mfa.verify({ factorId, challengeId: challenge.id, code });
+    if (error) {
+      setError("Código incorrecto, inténtalo de nuevo.");
+      setSubmitting(false);
+      return;
+    }
+
+    router.push("/dashboard");
+  }
+
+  function handleBack() {
+    setFactorId(null);
+    setCode("");
+    setError(null);
+    setSubmitting(false);
   }
 
   return (
@@ -52,34 +106,69 @@ export default function LoginPage() {
       <header className="flex flex-col gap-2">
         <h1 className="font-display text-3xl font-bold uppercase tracking-tight text-zinc-900 dark:text-zinc-50">Iniciar sesión</h1>
         <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          Entra con tu correo para seguir tu rutina.
+          {factorId
+            ? "Ingresa el código de verificación de tu app de autenticación."
+            : "Entra con tu correo para seguir tu rutina."}
         </p>
       </header>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-900 dark:text-zinc-100">
-          Correo electrónico
-          <input
-            type="email"
-            required
-            autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="h-11 rounded-lg border border-zinc-300 bg-white px-3 text-base text-zinc-900 outline-none transition focus:border-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50 dark:focus:border-zinc-100"
-          />
-        </label>
+      <form
+        onSubmit={factorId ? handleVerify : handleSubmit}
+        className="flex flex-col gap-4"
+      >
+        {!factorId && (
+          <>
+            <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-900 dark:text-zinc-100">
+              Correo electrónico
+              <input
+                type="email"
+                required
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="h-11 rounded-lg border border-zinc-300 bg-white px-3 text-base text-zinc-900 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/25 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50 dark:focus:border-orange-400"
+              />
+            </label>
 
-        <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-900 dark:text-zinc-100">
-          Contraseña
-          <input
-            type="password"
-            required
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="h-11 rounded-lg border border-zinc-300 bg-white px-3 text-base text-zinc-900 outline-none transition focus:border-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50 dark:focus:border-zinc-100"
-          />
-        </label>
+            <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-900 dark:text-zinc-100">
+              Contraseña
+              <input
+                type="password"
+                required
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="h-11 rounded-lg border border-zinc-300 bg-white px-3 text-base text-zinc-900 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/25 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50 dark:focus:border-orange-400"
+              />
+            </label>
+          </>
+        )}
+
+        {factorId && (
+          <>
+            <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-900 dark:text-zinc-100">
+              Código de verificación
+              <input
+                type="text"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                maxLength={6}
+                required
+                autoFocus
+                value={code}
+                onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+                className="h-11 rounded-lg border border-zinc-300 bg-white px-3 text-base text-zinc-900 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/25 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50 dark:focus:border-orange-400"
+              />
+            </label>
+            <button
+              type="button"
+              onClick={handleBack}
+              className="self-start text-sm font-medium text-zinc-600 underline transition hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+            >
+              Volver
+            </button>
+          </>
+        )}
 
         {error && (
           <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">
@@ -92,7 +181,13 @@ export default function LoginPage() {
           disabled={submitting}
           className="h-11 rounded-lg bg-orange-500 text-sm font-bold text-zinc-950 transition enabled:hover:bg-orange-400 disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500"
         >
-          {submitting ? "Entrando..." : "Iniciar sesión"}
+          {submitting
+            ? factorId
+              ? "Verificando..."
+              : "Entrando..."
+            : factorId
+              ? "Verificar"
+              : "Iniciar sesión"}
         </button>
       </form>
 
