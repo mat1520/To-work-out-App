@@ -26,3 +26,4 @@ Notas de avance del proyecto.
 - 2026-08-18: Mensajes y CTAs alineados en toda la app.
 - 2026-08-18: Edad, altura y peso corporal visibles.
 - 2026-08-18: Cerrar sesion desde la pagina de perfil.
+- 2026-08-18: Enlaces a rutinas, GitHub y logout.
