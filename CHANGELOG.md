@@ -22,3 +22,4 @@ Notas de avance del proyecto.
 - 2026-08-18: Récords actuales de compuestos en dashboard.
 - 2026-08-18: Descripcion sin MVP y creditos del autor.
 - 2026-08-18: Registro de cambios del proyecto.
+- 2026-08-18: Resaltado naranja al pasar el cursor.
