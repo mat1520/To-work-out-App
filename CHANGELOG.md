@@ -15,3 +15,4 @@ Notas de avance del proyecto.
 - 2026-08-18: Botones de estado vacio en naranja.
 - 2026-08-18: Tooltip y eje X con formato de fecha.
 - 2026-08-18: Banner con acento naranja y objetivo del dia.
+- 2026-08-18: Encabezados con Barlow Condensed en toda la app.
