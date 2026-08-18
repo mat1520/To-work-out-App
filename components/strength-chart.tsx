@@ -29,6 +29,11 @@ interface StrengthChartProps {
   names?: Record<string, string>;
 }
 
+const formatFecha = (fecha: string) => {
+  const [y, m, d] = fecha.split("-");
+  return d && m && y ? `${d}/${m}` : fecha;
+};
+
 export default function StrengthChart({ data, names = {} }: StrengthChartProps) {
   const series = COMPUESTOS.map((c) => ({ ...c, name: names[c.id] ?? c.label })).filter(
     ({ id }) => data.filter((p) => p[id] != null).length >= 2,
@@ -53,13 +58,14 @@ export default function StrengthChart({ data, names = {} }: StrengthChartProps) 
             tickLine={false}
             axisLine={{ stroke: "#3f3f46" }}
             minTickGap={28}
+            tickFormatter={formatFecha}
           />
           <YAxis
             tick={{ fill: "#a1a1aa", fontSize: 12 }}
             tickLine={false}
             axisLine={false}
-            unit="kg"
-            width={56}
+            unit=" kg"
+            width={64}
           />
           <Tooltip
             contentStyle={{
@@ -69,6 +75,7 @@ export default function StrengthChart({ data, names = {} }: StrengthChartProps) 
               color: "#e4e4e7",
             }}
             labelStyle={{ color: "#a1a1aa" }}
+            labelFormatter={(label) => formatFecha(String(label))}
             formatter={(value, name) => [`${value} kg`, name]}
           />
           <Legend wrapperStyle={{ fontSize: 13 }} />

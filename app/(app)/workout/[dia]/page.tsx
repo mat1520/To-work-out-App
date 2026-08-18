@@ -12,9 +12,11 @@ const slugify = (dia: string) => dia.toLowerCase().replace(/\s+/g, "-");
 
 function LastRecordBanner({ text, objetivo }: { text: string; objetivo: string }) {
   return (
-    <div className="flex flex-col gap-0.5 rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 dark:border-zinc-800 dark:bg-zinc-900">
-      <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">{text}</p>
-      <p className="text-xs text-zinc-500 dark:text-zinc-400">Objetivo del día: {objetivo}</p>
+    <div className="flex flex-col gap-0.5 rounded-xl border border-orange-500/30 bg-orange-500/5 px-3 py-2">
+      <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">{text}</p>
+      <p className="text-xs font-medium text-orange-600 dark:text-orange-400">
+        Objetivo del día: {objetivo}
+      </p>
     </div>
   );
 }
@@ -37,7 +39,7 @@ export default async function WorkoutDayPage({ params }: { params: Promise<{ dia
     return (
       <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-6">
         <header className="flex flex-col gap-1">
-          <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">Entrenamiento</h1>
+          <h1 className="font-display text-3xl font-bold uppercase tracking-tight text-zinc-900 dark:text-zinc-50">Entrenamiento</h1>
         </header>
         <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-zinc-300 px-6 py-10 text-center dark:border-zinc-700">
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
@@ -56,6 +58,7 @@ export default async function WorkoutDayPage({ params }: { params: Promise<{ dia
 
   const diaPorSlug = new Map<string, string>();
   for (const row of rows) diaPorSlug.set(slugify(row.dia), row.dia);
+  const dias = [...new Set(rows.map((row) => row.dia))];
   const dia = diaPorSlug.get(slug);
   if (!dia) notFound();
 
@@ -92,8 +95,32 @@ export default async function WorkoutDayPage({ params }: { params: Promise<{ dia
 
   return (
     <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-6">
+      <nav
+        aria-label="Días de la rutina"
+        className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {dias.map((d) => {
+          const activo = d === dia;
+          return (
+            <Link
+              key={d}
+              href={`/workout/${slugify(d)}`}
+              aria-current={activo ? "page" : undefined}
+              className={`flex h-10 shrink-0 items-center rounded-full px-4 text-sm font-semibold transition-colors ${
+                activo
+                  ? "bg-orange-500 text-zinc-950 shadow-md shadow-orange-500/25"
+                  : "border border-zinc-200 text-zinc-600 hover:border-zinc-400 hover:text-zinc-900 dark:border-zinc-700 dark:text-zinc-300 dark:hover:border-zinc-500 dark:hover:text-zinc-50"
+              }`}
+            >
+              {d}
+            </Link>
+          );
+        })}
+      </nav>
       <header className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">{dia}</h1>
+        <h1 className="font-display text-3xl font-bold uppercase tracking-tight text-zinc-900 dark:text-zinc-50">
+          {dia}
+        </h1>
         <p className="text-sm text-zinc-600 dark:text-zinc-400">
           Registra cada serie: peso y repeticiones para batir tu récord.
         </p>

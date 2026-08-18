@@ -31,7 +31,7 @@ export default async function RutinasPage() {
     return (
       <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-6">
         <header className="flex flex-col gap-1">
-          <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">Mis rutinas</h1>
+          <h1 className="font-display text-3xl font-bold uppercase tracking-tight text-zinc-900 dark:text-zinc-50">Mis rutinas</h1>
         </header>
         <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-zinc-300 px-6 py-10 text-center dark:border-zinc-700">
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
@@ -77,7 +77,7 @@ export default async function RutinasPage() {
   return (
     <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-6">
       <header className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">Mis rutinas</h1>
+        <h1 className="font-display text-3xl font-bold uppercase tracking-tight text-zinc-900 dark:text-zinc-50">Mis rutinas</h1>
         <p className="text-sm text-zinc-600 dark:text-zinc-400">
           Agrega o quita ejercicios y ajusta series y repeticiones por día.
         </p>

@@ -50,7 +50,7 @@ export default function LoginPage() {
   return (
     <div className="flex flex-col gap-8">
       <header className="flex flex-col gap-2">
-        <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">Iniciar sesión</h1>
+        <h1 className="font-display text-3xl font-bold uppercase tracking-tight text-zinc-900 dark:text-zinc-50">Iniciar sesión</h1>
         <p className="text-sm text-zinc-600 dark:text-zinc-400">
           Entra con tu correo para seguir tu rutina.
         </p>

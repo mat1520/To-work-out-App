@@ -17,3 +17,4 @@ DATASET/exercises-dataset/images/
 # Supabase / misc
 *.tsbuildinfo
 .DS_Store
+.vercel
