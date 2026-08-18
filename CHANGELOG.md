@@ -8,3 +8,4 @@ Notas de avance del proyecto.
 - 2026-08-18: Perfil con datos, peso editable y resumen de actividad.
 - 2026-08-18: Nav inferior con acceso a perfil.
 - 2026-08-18: Login y registro con marca y estilo unificado.
+- 2026-08-18: Limpiar etiquetas MVP de landing, README y footer.
