@@ -30,3 +30,14 @@ export async function completeOnboarding(input: ProfileInput) {
   if (rErr) throw rErr;
   redirect('/dashboard');
 }
+
+export async function updatePeso(pesoActual: number) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect('/login');
+  const { error } = await supabase
+    .from('users_profile')
+    .update({ peso_actual: pesoActual })
+    .eq('id', user.id);
+  if (error) throw error;
+}

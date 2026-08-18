@@ -39,7 +39,7 @@ export default async function RutinasPage() {
           </p>
           <Link
             href="/onboarding"
-            className="h-11 rounded-lg bg-zinc-900 px-4 text-sm font-semibold text-white transition enabled:hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:enabled:hover:bg-zinc-300"
+            className="h-11 rounded-lg bg-orange-500 px-4 text-sm font-bold text-zinc-950 shadow-lg shadow-orange-500/25 transition enabled:hover:bg-orange-400"
           >
             Generar mi plan
           </Link>

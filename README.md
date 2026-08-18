@@ -1,6 +1,8 @@
-# Sobrecarga Progresiva — MVP Powerbuilding
+# Sobrecarga Progresiva
 
-MVP de una app de powerbuilding para gestionar rutinas de entrenamiento con sobrecarga progresiva: seguimiento de entrenamientos, dashboard de progreso y un catálogo de 1,324 ejercicios con GIFs de demostración.
+App de powerbuilding para gestionar rutinas de entrenamiento con sobrecarga progresiva: rutinas automáticas, seguimiento de entrenamientos con detección de récords, dashboard de progreso y un catálogo de 1,324 ejercicios con GIFs de demostración.
+
+Hecho por [mat1520](https://github.com/mat1520).
 
 ## Stack
 

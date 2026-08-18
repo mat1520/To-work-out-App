@@ -90,7 +90,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="h-11 rounded-lg bg-zinc-900 text-sm font-semibold text-white transition enabled:hover:bg-zinc-700 disabled:opacity-60 dark:bg-zinc-100 dark:text-zinc-900 dark:enabled:hover:bg-zinc-300"
+          className="h-11 rounded-lg bg-orange-500 text-sm font-bold text-zinc-950 transition enabled:hover:bg-orange-400 disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500"
         >
           {submitting ? "Entrando..." : "Iniciar sesión"}
         </button>
